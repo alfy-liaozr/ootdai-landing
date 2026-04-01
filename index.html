@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OOTD AI - 你的智能穿搭顾问</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --primary-light: #FFE8E8;
+            --secondary: #4ECDC4;
+            --secondary-light: #E8F8F7;
+            --accent: #95E1D3;
+            --dark: #2D3436;
+            --gray-100: #F8F9FA;
+            --gray-200: #E9ECEF;
+            --gray-300: #DEE2E6;
+            --gray-400: #CED4DA;
+            --gray-500: #ADB5BD;
+            --white: #FFFFFF;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+            --shadow-hover: 0 12px 48px rgba(255,107,107,0.15);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--gray-500);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--dark);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 16px rgba(255,107,107,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,107,107,0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--dark);
+            border: 2px solid var(--gray-300);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu-btn span {
+            width: 24px;
+            height: 2px;
+            background: var(--dark);
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+
+        .hero-bg-gradient {
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 150%;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 50%, var(--accent-light) 100%);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-5%, 5%) rotate(5deg); }
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badge svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gray-500);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .stat {
+            text-align: left;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .hero-visual {
+            position: relative;
+            opacity: 0;
+            transform: translateX(30px);
+            animation: fadeInRight 0.8s ease 0.3s forwards;
+        }
+
+        @keyframes fadeInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-mockup {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-mockup img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: bounce 3s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating-card-1 {
+            top: 10%;
+            right: -20px;
+            animation-delay: 0s;
+        }
+
+        .floating-card-2 {
+            bottom: 20%;
+            left: -20px;
+            animation-delay: 1s;
+        }
+
+        .floating-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-card-icon.pink {
+            background: var(--primary-light);
+        }
+
+        .floating-card-icon.teal {
+            background: var(--secondary-light);
+        }
+
+        .floating-card-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .floating-card-icon.pink svg {
+            stroke: var(--primary);
+        }
+
+        .floating-card-icon.teal svg {
+            stroke: var(--secondary);
+        }
+
+        .floating-card-text {
+            font-size: 0.875rem;
+        }
+
+        .floating-card-text strong {
+            display: block;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .floating-card-text span {
+            color: var(--gray-500);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: var(--gray-100);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--secondary-light);
+            color: var(--secondary);
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--gray-500);
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .feature-icon.pink {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .feature-icon.teal {
+            background: var(--secondary-light);
+            color: var(--secondary);
+        }
+
+        .feature-icon.green {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 2rem;
+        }
+
+        .steps {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step:nth-child(even) {
+            direction: rtl;
+        }
+
+        .step:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .step-content {
+            padding: 2rem;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--radius-md);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .step h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .step p {
+            color: var(--gray-500);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .step-visual {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .step-visual img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .step:hover .step-visual img {
+            transform: scale(1.05);
+        }
+
+        /* Gallery Section */
+        .gallery {
+            padding: 6rem 2rem;
+            background: var(--gray-100);
+        }
+
+        .gallery-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 250px;
+            gap: 1rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .gallery-item:nth-child(1) { grid-row: span 2; }
+        .gallery-item:nth-child(4) { grid-column: span 2; }
+        .gallery-item:nth-child(6) { grid-row: span 2; }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 1.5rem;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-info {
+            color: white;
+        }
+
+        .gallery-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .gallery-info span {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        /* Style Quiz */
+        .quiz {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--dark) 0%, #3D4449 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,107,107,0.1) 0%, transparent 50%);
+            animation: pulse 10s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .quiz-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .quiz p {
+            font-size: 1.25rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-option {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            color: white;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .quiz-option.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .quiz-option-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .quiz-option-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 2rem;
+        }
+
+        .testimonials-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .testimonial-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonial-info span {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .testimonial-text {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-rating {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .testimonial-rating svg {
+            width: 16px;
+            height: 16px;
+            fill: #FFB800;
+            stroke: none;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.25rem;
+            color: var(--gray-500);
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-brand p {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--gray-400);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--gray-500);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .footer-social svg {
+            width: 18px;
+            height: 18px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero p {
+                margin: 0 auto 2rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .stat {
+                text-align: center;
+            }
+
+            .hero-visual {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .floating-card {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gallery-item:nth-child(1),
+            .gallery-item:nth-child(6) {
+                grid-row: auto;
+            }
+
+            .gallery-item:nth-child(4) {
+                grid-column: auto;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .hero {
+                padding: 5rem 1.5rem 3rem;
+            }
+
+            .step {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .step:nth-child(even) {
+                direction: ltr;
+            }
+
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                OOTD AI
+            </a>
+            <div class="nav-links">
+                <a href="#features">功能特点</a>
+                <a href="#how-it-works">如何使用</a>
+                <a href="#gallery">穿搭图鉴</a>
+                <a href="#testimonials">用户评价</a>
+                <a href="#" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    立即体验
+                </a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="hero-bg-gradient"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    AI 驱动的智能穿搭
+                </div>
+                <h1>每天穿搭<br><span>不再纠结</span></h1>
+                <p>上传你的衣橱，AI 帮你搭配出最适合今日的穿搭方案。无论通勤、约会还是休闲，都能轻松找到完美组合。</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        免费开始使用
+                    </a>
+                    <a href="#how-it-works" class="btn btn-outline">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        了解更多
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">活跃用户</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">200K+</div>
+                        <div class="stat-label">穿搭推荐</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">4.9</div>
+                        <div class="stat-label">用户评分</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-mockup">
+                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=800&fit=crop" alt="Fashion App Interface">
+                </div>
+                <div class="floating-card floating-card-1">
+                    <div class="floating-card-icon pink">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <div class="floating-card-text">
+                        <strong>AI 搭配成功</strong>
+                        <span>3秒生成方案</span>
+                    </div>
+                </div>
+                <div class="floating-card floating-card-2">
+                    <div class="floating-card-icon teal">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </div>
+                    <div class="floating-card-text">
+                        <strong>收藏到衣橱</strong>
+                        <span>已保存 28 件</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header fade-in">
+            <span class="section-tag">核心功能</span>
+            <h2>为什么选择 OOTD AI</h2>
+            <p>我们用人工智能重新定义穿搭体验，让每一次出门都充满信心</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon pink">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <h3>拍照识别单品</h3>
+                <p>上传衣服照片，AI 自动识别款式、颜色、材质，智能添加到你的数字衣橱中。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon teal">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <h3>智能穿搭推荐</h3>
+                <p>根据天气、场合、你的个人风格，AI 在 3 秒内生成最佳搭配方案。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon green">
+                    <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </div>
+                <h3>数字衣橱管理</h3>
+                <p>告别乱糟糟的衣柜，用数字化方式管理你的所有衣物，一目了然。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon pink">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+                <h3>场景化穿搭</h3>
+                <p>通勤、约会、旅行、运动...为不同场景量身定制搭配方案。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon teal">
+                    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                <h3>风格偏好学习</h3>
+                <p>AI 持续学习你的喜好，越用越懂你，推荐越来越精准。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon green">
+                    <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                </div>
+                <h3>穿搭分享社区</h3>
+                <p>分享你的穿搭灵感，关注时尚达人，获取更多搭配灵感。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header fade-in">
+            <span class="section-tag">三步开始</span>
+            <h2>如何使用 OOTD AI</h2>
+            <p>简单三步，开启你的智能穿搭之旅</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-content">
+                    <div class="step-number">1</div>
+                    <h3>拍摄或上传你的衣物</h3>
+                    <p>用手机拍下你的衣服，或者从相册中选择图片。AI 会自动识别衣物类型、颜色和款式，添加到你的数字衣橱中。支持批量上传，省时省力。</p>
+                </div>
+                <div class="step-visual">
+                    <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?w=500&h=400&fit=crop" alt="Upload clothes">
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-content">
+                    <div class="step-number">2</div>
+                    <h3>选择今日场景</h3>
+                    <p>告诉 AI 你今天要去哪里：办公室、咖啡厅、健身房、约会现场...系统会根据场景、天气和你的风格偏好，智能推荐最佳搭配。</p>
+                </div>
+                <div class="step-visual">
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&h=400&fit=crop" alt="Select occasion">
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-content">
+                    <div class="step-number">3</div>
+                    <h3>获取穿搭方案并保存</h3>
+                    <p>在几秒内获得多套搭配方案，你可以收藏喜欢的搭配，或者让 AI 继续优化。满意的话，直接穿上出门，自信满满！</p>
+                </div>
+                <div class="step-visual">
+                    <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=500&h=400&fit=crop" alt="Get outfit">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery" id="gallery">
+        <div class="section-header fade-in">
+            <span class="section-tag">穿搭灵感</span>
+            <h2>发现时尚搭配</h2>
+            <p>浏览来自社区的精彩穿搭，获取每日搭配灵感</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item fade-in">
+                <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&h=800&fit=crop" alt="Casual Streetwear">
+                <div class="gallery-overlay">
+                    <div class="gallery-info">
+                        <h4>休闲街头风</h4>
+                        <span>日常出街首选</span>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item fade-in">
+                <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=300&fit=crop" alt="Office Style">
+                <div class="gallery-overlay">
+                    <div class="gallery-info">
+                        <h4>职场通勤</h4>
+                        <span>干练优雅</span>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item fade-in">
+                <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=300&fit=crop" alt="Date Night">
+                <div class="gallery-overlay">
+                    <div class="gallery-info">
+                        <h4>约会穿搭</h4>
+                        <span>浪漫优雅</span>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item fade-in">
+                <img src="https://images.unsplash.com/photo-1571513722275-4b41940f54b8?w=800&h=300&fit=crop" alt="Summer Vibes">
+                <div class="gallery-overlay">
+                    <div class="gallery-info">
+                        <h4>夏日清新</h4>
+                        <span>清爽一夏</span>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item fade-in">
+                <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&h=300&fit=crop" alt="Athletic">
+                <div class="gallery-overlay">
+                    <div class="gallery-info">
+                        <h4>运动休闲</h4>
+                        <span>活力满满</span>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item fade-in">
+                <img src="https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&h=600&fit=crop" alt="Winter Style">
+                <div class="gallery-overlay">
+                    <div class="gallery-info">
+                        <h4>冬季保暖</h4>
+                        <span>时尚温度兼具</span>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item fade-in">
+                <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=300&fit=crop" alt="Minimalist">
+                <div class="gallery-overlay">
+                    <div class="gallery-info">
+                        <h4>极简主义</h4>
+                        <span>简约不简单</span>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item fade-in">
+                <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=300&fit=crop" alt="Vintage">
+                <div class="gallery-overlay">
+                    <div class="gallery-info">
+                        <h4>复古风格</h4>
+                        <span>经典永不过时</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Style Quiz -->
+    <section class="quiz" id="quiz">
+        <div class="quiz-content fade-in">
+            <h2>找到你的专属风格</h2>
+            <p>回答几个简单问题，告诉我们你的穿衣偏好</p>
+            <div class="quiz-options">
+                <button class="quiz-option" data-value="casual">
+                    <div class="quiz-option-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+                    </div>
+                    休闲舒适
+                </button>
+                <button class="quiz-option" data-value="elegant">
+                    <div class="quiz-option-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    </div>
+                    优雅正式
+                </button>
+                <button class="quiz-option" data-value="sporty">
+                    <div class="quiz-option-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/><path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"/><path d="M2 12h20"/></svg>
+                    </div>
+                    运动活力
+                </button>
+                <button class="quiz-option" data-value="trendy">
+                    <div class="quiz-option-icon">
+                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    前卫潮流
+                </button>
+            </div>
+            <a href="#" class="btn btn-primary">开始风格测试</a>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+        <div class="section-header fade-in">
+            <span class="section-tag">用户评价</span>
+            <h2>他们都在用 OOTD AI</h2>
+            <p>听听真实用户的使用体验</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-header">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="用户头像" class="testimonial-avatar">
+                    <div class="testimonial-info">
+                        <h4>林小雨</h4>
+                        <span>产品经理</span>
+                    </div>
+                </div>
+                <p class="testimonial-text">"每天早上再也不用纠结穿什么了！AI 推荐的搭配总是恰到好处，同事们都说我衣品提升了很多。"</p>
+                <div class="testimonial-rating">
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+            </div>
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-header">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="用户头像" class="testimonial-avatar">
+                    <div class="testimonial-info">
+                        <h4>张明浩</h4>
+                        <span>设计师</span>
+                    </div>
+                </div>
+                <p class="testimonial-text">"数字衣橱功能太实用了！以前总买重复的衣服，现在系统会提醒我哪些单品还没穿过，太省钱了。"</p>
+                <div class="testimonial-rating">
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+            </div>
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-header">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="用户头像" class="testimonial-avatar">
+                    <div class="testimonial-info">
+                        <h4>王思琪</h4>
+                        <span>大学生</span>
+                    </div>
+                </div>
+                <p class="testimonial-text">"作为一个穿搭小白，这个 app 完全改变了我的穿衣方式！现在出门总是自信满满，好闺蜜都问我变美秘籍。"</p>
+                <div class="testimonial-rating">
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content fade-in">
+            <h2>准备好提升你的穿搭了吗？</h2>
+            <p>加入 50,000+ 用户，开始你的智能穿搭之旅</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    立即免费使用
+                </a>
+                <a href="#" class="btn btn-outline">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    了解更多
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </div>
+                    OOTD AI
+                </h3>
+                <p>用人工智能重新定义你的穿搭体验。每天出门前，不再纠结；每一次搭配，都充满惊喜。</p>
+            </div>
+            <div class="footer-links">
+                <h4>产品</h4>
+                <ul>
+                    <li><a href="#">功能介绍</a></li>
+                    <li><a href="#">如何使用</a></li>
+                    <li><a href="#">穿搭图鉴</a></li>
+                    <li><a href="#">更新日志</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>支持</h4>
+                <ul>
+                    <li><a href="#">常见问题</a></li>
+                    <li><a href="#">联系我们</a></li>
+                    <li><a href="#">用户反馈</a></li>
+                    <li><a href="#">帮助中心</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>法律</h4>
+                <ul>
+                    <li><a href="#">隐私政策</a></li>
+                    <li><a href="#">服务条款</a></li>
+                    <li><a href="#">Cookie 政策</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 OOTD AI. All rights reserved.</span>
+            <div class="footer-social">
+                <a href="#" aria-label="微信">
+                    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </a>
+                <a href="#" aria-label="微博">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8.5 12.5c0-2.5 3-4.5 5.5-4.5 1.5 0 2.5.5 3 1.5l-2 1c-.2-.5-.8-1-1.5-1-1.5 0-3 1-3 3s1.5 3 3 3c.7 0 1.3-.2 1.5-.5l2 1c-.5 1-1.5 1.5-3 1.5-2.5 0-5.5-2-5.5-4.5z"/></svg>
+                </a>
+                <a href="#" aria-label="小红书">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in, .step').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Quiz interaction
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
